@@ -1,7 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "TankAimingComponent.h"
-
+#include "TankBarrel.h"
+#include "TankTurret.h"
 
 // Sets default values for this component's properties
 UTankAimingComponent::UTankAimingComponent()
@@ -30,14 +31,39 @@ void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);	
 }
 
-void UTankAimingComponent::AimAt(FVector AimLocation)
-{
-	auto BarrelLocation = Barrel->GetComponentLocation().ToString();
-	UE_LOG(LogTemp, Warning, TEXT("Barrel found at location: %s"), *BarrelLocation)
-}
-
-void UTankAimingComponent::SetBarrelReference(UStaticMeshComponent * BarrelToSet)
+void UTankAimingComponent::SetBarrelReference(UTankBarrel * BarrelToSet)
 {
 	Barrel = BarrelToSet;
 }
+
+void UTankAimingComponent::SetTurretReference(UTankTurret * TurretToSet)
+{
+	Turret = TurretToSet;
+}
+
+void UTankAimingComponent::AimAt(FVector AimLocation, float LaunchSpeed)
+{
+	FVector OutLaunchVelocity;
+	auto StartLocation = Barrel->GetSocketLocation(FName("Projectile"));
+	bool suggestedVelocitySuccess = UGameplayStatics::SuggestProjectileVelocity(this, OutLaunchVelocity, StartLocation,
+									AimLocation, LaunchSpeed, false, 0, 0, ESuggestProjVelocityTraceOption::DoNotTrace);
+
+	if (suggestedVelocitySuccess)
+	{
+		auto LaunchDirection = OutLaunchVelocity.GetSafeNormal();
+		MoveBarrelTowards(LaunchDirection);
+	}
+}
+
+void UTankAimingComponent::MoveBarrelTowards(FVector LaunchDirection)
+{
+	auto BarrelRotator = Barrel->GetForwardVector().Rotation();
+	auto LaunchRotator = LaunchDirection.Rotation();
+	auto DeltaRotator = LaunchRotator - BarrelRotator;
+
+	Barrel->Elevate(DeltaRotator.Pitch);
+	Turret->Rotate(DeltaRotator.Yaw);
+}
+
+
 

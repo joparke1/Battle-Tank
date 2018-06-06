@@ -1,7 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Tank.h"
 
+#include "Tank.h"
+#include "TankBarrel.h"
+#include "TankTurret.h"
 
 // Sets default values
 ATank::ATank()
@@ -33,11 +35,17 @@ void ATank::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void ATank::AimAt(FVector AimLocation)
 {
-	TankAimingComponent->AimAt(AimLocation);
+	TankAimingComponent->AimAt(AimLocation, LaunchSpeed);
 }
 
 UFUNCTION(BlueprintCallable, Category = Setup)
-void ATank::SetBarrelReference(UStaticMeshComponent* BarrelToSet)
+void ATank::SetBarrelReference(UTankBarrel* BarrelToSet)
 {
 	TankAimingComponent->SetBarrelReference(BarrelToSet);
+}
+
+UFUNCTION(BlueprintCallable, Category = Setup)
+void ATank::SetTurretReference(UTankTurret * TurretToSet)
+{
+	TankAimingComponent->SetTurretReference(TurretToSet);
 }
