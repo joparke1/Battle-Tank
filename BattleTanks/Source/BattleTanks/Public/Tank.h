@@ -4,11 +4,13 @@
 
 #include "TankAimingComponent.h"
 #include "CoreMinimal.h"
+#include "Engine/World.h"
 #include "GameFramework/Pawn.h"
 #include "Tank.generated.h"
 
 class UTankBarrel;
 class UTankTurret;
+class AProjectile;
 
 UCLASS()
 class BATTLETANKS_API ATank : public APawn
@@ -28,6 +30,9 @@ public:
 	void AimAt(FVector AimLocation);
 
 	UFUNCTION(BlueprintCallable, Category = Setup)
+	void Fire();
+
+	UFUNCTION(BlueprintCallable, Category = Setup)
 	void SetBarrelReference(UTankBarrel* BarrelToSet);
 
 	UFUNCTION(BlueprintCallable, Category = Setup)
@@ -41,4 +46,11 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = Firing)
 	float LaunchSpeed = 10000.f;
+
+
+private:
+	UPROPERTY(EditAnywhere, Category = Firing)
+	TSubclassOf<AProjectile> Projectile;
+
+	UTankBarrel* Barrel;
 };
