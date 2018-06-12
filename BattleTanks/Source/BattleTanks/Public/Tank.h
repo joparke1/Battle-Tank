@@ -10,6 +10,7 @@
 
 class UTankBarrel;
 class UTankTurret;
+class UTankMovementComponent;
 class AProjectile;
 
 UCLASS()
@@ -33,19 +34,22 @@ public:
 	void Fire();
 
 	UFUNCTION(BlueprintCallable, Category = Setup)
-	void SetBarrelReference(UTankBarrel* BarrelToSet);
+	void Initialize(UTankBarrel* BarrelToSet, UTankTurret* TurretToSet);
 
-	UFUNCTION(BlueprintCallable, Category = Setup)
-	void SetTurretReference(UTankTurret* TurretToSet);
+	bool GetReloadComplete();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY(BlueprintReadOnly)
 	UTankAimingComponent * TankAimingComponent = nullptr;
 
+	UPROPERTY(BlueprintReadOnly)
+	UTankMovementComponent* TankMovementComponent = nullptr;
+
 	UPROPERTY(EditAnywhere, Category = Firing)
-	float LaunchSpeed = 10000.f;
+	float LaunchSpeed = 4000.f;
 
 
 private:
@@ -53,4 +57,7 @@ private:
 	TSubclassOf<AProjectile> Projectile;
 
 	UTankBarrel* Barrel;
+
+	float ReloadTime = 3.f;
+	double LastLaunchTime = 0;
 };

@@ -4,10 +4,11 @@
 
 #include "CoreMinimal.h"
 #include <Engine/World.h>
-#include "Tank.h"
 #include "GameFramework/PlayerController.h"
 #include "TankPlayerController.generated.h"
 
+
+class ATank;
 /**
  * 
  */
@@ -21,7 +22,9 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float) override;
 
+	UFUNCTION(BlueprintCallable, Category = Setup)
 	ATank * GetControlledTank() const;
+	
 	void AimTowardsCrosshair();
 
 private:

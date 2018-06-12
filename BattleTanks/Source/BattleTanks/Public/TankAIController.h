@@ -20,8 +20,14 @@ class BATTLETANKS_API ATankAIController : public AAIController
 public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
-
-	ATank * GetAITank() const;
 	
-	ATank* GetPlayerTank() const;
+
+private:
+	ATank* AITank;
+	
+	ATank* PlayerTank;
+
+	// how close the AI can get to the actor
+	UPROPERTY(EditDefaultsOnly)
+	float AcceptanceRadius = 1000.0f;
 };

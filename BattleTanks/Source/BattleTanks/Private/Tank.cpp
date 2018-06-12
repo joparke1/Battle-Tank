@@ -5,6 +5,7 @@
 #include "TankBarrel.h"
 #include "TankTurret.h"
 #include "Projectile.h"
+#include "TankMovementComponent.h"
 
 // Sets default values
 ATank::ATank()
@@ -13,6 +14,7 @@ ATank::ATank()
 	PrimaryActorTick.bCanEverTick = true;
 
 	TankAimingComponent = CreateDefaultSubobject<UTankAimingComponent>(FName("Aiming Component"));
+	TankMovementComponent = CreateDefaultSubobject<UTankMovementComponent>(FName("Movement Component"));
 }
 
 void ATank::BeginPlay()
@@ -42,22 +44,28 @@ void ATank::AimAt(FVector AimLocation)
 UFUNCTION(BlueprintCallable, Category = Setup)
 void ATank::Fire()
 {
-	if (!Barrel) { return; }
+	auto bReloadComplete = GetReloadComplete();
+	if (Barrel && bReloadComplete)
+	{
+		
+		auto FiredProjectile = GetWorld()->SpawnActor<AProjectile>(Projectile,
+			Barrel->GetSocketLocation(FName("Projectile")),
+			Barrel->GetSocketRotation(FName("Projectile")));
 
-	GetWorld()->SpawnActor<AProjectile>(Projectile,
-		Barrel->GetSocketLocation(FName("Projectile")),
-		Barrel->GetSocketRotation(FName("Projectile")));
+		FiredProjectile->Launch(LaunchSpeed);
+
+		LastLaunchTime = GetWorld()->GetTimeSeconds();
+	}
 }
 
-UFUNCTION(BlueprintCallable, Category = Setup)
-void ATank::SetBarrelReference(UTankBarrel* BarrelToSet)
+void ATank::Initialize(UTankBarrel * BarrelToSet, UTankTurret * TurretToSet)
 {
-	TankAimingComponent->SetBarrelReference(BarrelToSet);
 	Barrel = BarrelToSet;
+	TankAimingComponent->Initialize(BarrelToSet, TurretToSet);
 }
 
-UFUNCTION(BlueprintCallable, Category = Setup)
-void ATank::SetTurretReference(UTankTurret * TurretToSet)
+
+bool ATank::GetReloadComplete()
 {
-	TankAimingComponent->SetTurretReference(TurretToSet);
+	return (GetWorld()->GetTimeSeconds() - LastLaunchTime) >= ReloadTime;
 }

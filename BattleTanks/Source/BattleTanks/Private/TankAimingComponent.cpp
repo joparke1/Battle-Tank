@@ -3,6 +3,7 @@
 #include "TankAimingComponent.h"
 #include "TankBarrel.h"
 #include "TankTurret.h"
+#include "Tank.h"
 
 // Sets default values for this component's properties
 UTankAimingComponent::UTankAimingComponent()
@@ -20,7 +21,7 @@ void UTankAimingComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
+	owningTank = Cast<ATank>( GetOwner() );
 	
 }
 
@@ -28,17 +29,19 @@ void UTankAimingComponent::BeginPlay()
 // Called every frame
 void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);	
-}
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-void UTankAimingComponent::SetBarrelReference(UTankBarrel * BarrelToSet)
-{
-	Barrel = BarrelToSet;
-}
-
-void UTankAimingComponent::SetTurretReference(UTankTurret * TurretToSet)
-{
-	Turret = TurretToSet;
+	if (owningTank)
+	{
+		if (!owningTank->GetReloadComplete())
+		{
+			FiringState = EFiringState::Reloading;
+		}
+		else
+		{
+			FiringState = EFiringState::Locked;
+		}
+	}
 }
 
 void UTankAimingComponent::AimAt(FVector AimLocation, float LaunchSpeed)
@@ -53,6 +56,12 @@ void UTankAimingComponent::AimAt(FVector AimLocation, float LaunchSpeed)
 		auto LaunchDirection = OutLaunchVelocity.GetSafeNormal();
 		MoveBarrelTowards(LaunchDirection);
 	}
+}
+
+void UTankAimingComponent::Initialize(UTankBarrel * BarrelToSet, UTankTurret * TurretToSet)
+{
+	Barrel = BarrelToSet;
+	Turret = TurretToSet;
 }
 
 void UTankAimingComponent::MoveBarrelTowards(FVector LaunchDirection)
