@@ -37,7 +37,7 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void AimAt(FVector AimLocation, float LaunchSpeed);
+	void AimAt(FVector AimLocation);
 	
 	UFUNCTION(BlueprintCallable, Category = Setup)
 	void Initialize(UTankBarrel* BarrelToSet, UTankTurret* TurretToSet);
@@ -49,6 +49,9 @@ protected:
 private:
 	UTankBarrel* Barrel = nullptr;
 	UTankTurret* Turret = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = Firing)
+	float LaunchSpeed = 4000.f;
 	
 	ATank* owningTank = nullptr;
 

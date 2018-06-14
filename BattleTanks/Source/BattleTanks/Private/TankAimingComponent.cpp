@@ -31,21 +31,23 @@ void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (owningTank)
+	if (!ensure(owningTank)) { return; }
+	
+	if (!owningTank->GetReloadComplete())
 	{
-		if (!owningTank->GetReloadComplete())
-		{
-			FiringState = EFiringState::Reloading;
-		}
-		else
-		{
-			FiringState = EFiringState::Locked;
-		}
+		FiringState = EFiringState::Reloading;
 	}
+	else
+	{
+		FiringState = EFiringState::Locked;
+	}
+	
 }
 
-void UTankAimingComponent::AimAt(FVector AimLocation, float LaunchSpeed)
+void UTankAimingComponent::AimAt(FVector AimLocation)
 {
+	if (!ensure(Barrel)) { return; }
+
 	FVector OutLaunchVelocity;
 	auto StartLocation = Barrel->GetSocketLocation(FName("Projectile"));
 	bool suggestedVelocitySuccess = UGameplayStatics::SuggestProjectileVelocity(this, OutLaunchVelocity, StartLocation,

@@ -9,6 +9,7 @@
 
 
 class ATank;
+class UTankAimingComponent;
 /**
  * 
  */
@@ -21,13 +22,16 @@ class BATTLETANKS_API ATankPlayerController : public APlayerController
 public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float) override;
-
-	UFUNCTION(BlueprintCallable, Category = Setup)
-	ATank * GetControlledTank() const;
 	
 	void AimTowardsCrosshair();
 
+protected:
+	UPROPERTY(BlueprintReadOnly, Category = "Setup")
+	UTankAimingComponent * AimingComponent = nullptr;
+
 private:
+	
+
 	bool GetSightRayHitLocation(FVector&);
 
 	void GetWorldLookDirectionFromScreen(FVector &WorldLookDirection);

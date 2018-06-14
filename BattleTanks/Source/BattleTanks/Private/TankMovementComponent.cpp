@@ -6,7 +6,7 @@
 UFUNCTION(BlueprintCallable, Category = Setup)
 void UTankMovementComponent::Initialize(UTankTreds* LeftTredToSet, UTankTreds* RightTredToSet)
 {
-	if (!LeftTredToSet || !RightTredToSet) { return; }
+	if (!ensure(LeftTredToSet && RightTredToSet)) { return; }
 
 	LeftTred = LeftTredToSet;
 	RightTred = RightTredToSet;

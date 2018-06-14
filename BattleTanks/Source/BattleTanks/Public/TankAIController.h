@@ -9,6 +9,8 @@
 #include "AIController.h"
 #include "TankAIController.generated.h"
 
+class UTankAimingComponent;
+
 /**
  * 
  */
@@ -23,9 +25,9 @@ public:
 	
 
 private:
-	ATank* AITank;
-	
 	ATank* PlayerTank;
+
+	UTankAimingComponent* AimingComponent = nullptr;
 
 	// how close the AI can get to the actor
 	UPROPERTY(EditDefaultsOnly)
